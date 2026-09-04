@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local PDF build artifacts (source lives in docs/source/)
+vendor_pdf/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Pipeline runtime artifacts (keep examples only)
+.dev-agent/*/pipeline.json
+.dev-agent/*/[0-9][0-9]-*.md
+.dev-agent/*/[0-9][0-9]-*.json

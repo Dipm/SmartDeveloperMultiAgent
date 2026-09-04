@@ -1,0 +1,20 @@
+---
+alwaysApply: false
+description: Project architecture conventions referenced by @review and @context.
+---
+# Architecture conventions
+
+Customize this file for your project. `@context` and `@review` reference it when
+mapping code and checking style.
+
+## Layering
+- Describe your module/package boundaries here.
+
+## Naming
+- File, class, and function naming rules.
+
+## Testing
+- Where tests live and what framework you use.
+
+## Security
+- Auth, secrets, and input-validation expectations.

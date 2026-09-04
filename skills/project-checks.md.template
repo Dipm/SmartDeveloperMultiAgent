@@ -1,0 +1,9 @@
+# Project checks
+
+Fill this in once per project with the real commands. Every agent that needs to
+lint, build, or test references this file instead of guessing.
+
+- **Lint:** `<exact command>`
+- **Type-check / build:** `<exact command>`
+- **Full test suite:** `<exact command>`
+- **Single test file:** `<exact command, with a placeholder for the file path>`

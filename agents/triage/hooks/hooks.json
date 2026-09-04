@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/triage/hooks/require-ticket.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

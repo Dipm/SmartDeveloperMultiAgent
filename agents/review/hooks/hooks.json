@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/review/hooks/require-tests.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/review/hooks/flag-only.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/review/hooks/flag-only.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+When using `/fix-ticket` or SmartDeveloper subagents (`@triage`, `@context`, `@plan`,
+`@dev`, `@test`, `@review`, `@docs-pr`, `@pr-fix`), ticket state lives in
+`.dev-agent/{ticket-id}/` (`pipeline.json` plus numbered artifacts) in the **current
+project workspace**.
+
+Agents always read prior-stage files before starting their stage, and never skip
+ahead to a later stage's file. Never proceed past a human gate without explicit
+go-ahead in the conversation. The plan gate (stage 3) and the PR gate (stage 7) are
+required, not optional, regardless of ticket size.
+
+After each subagent finishes, stop and wait for engineer go-ahead before invoking the
+next stage.

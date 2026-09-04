@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/docs-pr/hooks/require-review-clear.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/docs-pr/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/docs-pr/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

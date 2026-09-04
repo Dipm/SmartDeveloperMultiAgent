@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/pr-fix/hooks/require-single-comment.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/pr-fix/hooks/append-only-log.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/pr-fix/hooks/append-only-log.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

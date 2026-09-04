@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "AGENT=context FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/context/hooks/require-triage.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=dev FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/dev/hooks/require-approved-plan.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=docs-pr FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/docs-pr/hooks/require-review-clear.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=plan FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/plan/hooks/require-context.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=pr-fix FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/pr-fix/hooks/require-single-comment.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=review FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/review/hooks/require-tests.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=test FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/test/hooks/require-dev-notes.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=triage FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/triage/hooks/require-ticket.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "AGENT=context FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/context/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=dev FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/dev/hooks/enforce-plan-scope.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=docs-pr FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/docs-pr/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=plan FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/plan/hooks/block-implementation.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=pr-fix FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/pr-fix/hooks/append-only-log.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=review FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/review/hooks/flag-only.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=test FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/test/hooks/tests-only.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=triage FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "AGENT=context FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/context/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=dev FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/dev/hooks/enforce-plan-scope.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=docs-pr FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/docs-pr/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=plan FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/plan/hooks/block-implementation.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=pr-fix FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/pr-fix/hooks/append-only-log.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=review FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/review/hooks/flag-only.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=test FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/test/hooks/tests-only.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "AGENT=triage FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "AGENT=triage FAIL_CLOSED=1 python3 hooks/smartDevByDipali_hookWrapper.py agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

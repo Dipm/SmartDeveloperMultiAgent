@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/context/hooks/require-triage.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/context/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/context/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/test/hooks/require-dev-notes.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/test/hooks/tests-only.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/test/hooks/tests-only.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

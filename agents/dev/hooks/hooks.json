@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/dev/hooks/require-approved-plan.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/dev/hooks/enforce-plan-scope.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/dev/hooks/enforce-plan-scope.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}
