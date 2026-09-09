@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/spec/hooks/require-ticket.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "hooks/lib/record-stage-start.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/spec/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/spec/hooks/enforce-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "hooks/lib/verify-stage-complete.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "hooks/lib/mark-plan-approved.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

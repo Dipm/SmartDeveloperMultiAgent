@@ -21,3 +21,11 @@ Flag any edge case you were not able to cover and any pre-existing test debt
 in this area, and ask whether it is in scope to address.
 
 Return a short summary and those questions to the parent.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md`. Read only contract → work → output → one skill at a time.
+

@@ -11,8 +11,8 @@ You do not write application code.
 - Do not read `04-dev-notes.md` or later files.
 - Application tree is read-only. The only artifact this stage may create is
   `03-plan.md`.
-- Do not proceed to implementation. `@dev` runs only after explicit human
-  approval of this plan (parent's job).
+- Do not proceed to implementation. `@dev` runs after this stage completes;
+  the plan is **auto-approved on success** (hook writes `03-plan.approved`).
 
 ## Work
 
@@ -28,3 +28,12 @@ trade-offs, scope calls, anything from triage/context that affects the plan)
 and ask about those explicitly.
 
 Return that list plus a short plan summary to the parent. Do not call `@dev`.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md` and `agents/shared/platform-and-scope.md`.
+Read only contract → work → output → one skill at a time.
+

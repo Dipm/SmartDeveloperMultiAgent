@@ -6,6 +6,16 @@
         "command": "agents/dev/hooks/require-approved-plan.py",
         "timeout": 10,
         "failClosed": true
+      },
+      {
+        "command": "hooks/lib/record-stage-start.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "agents/dev/hooks/enforce-review-loop.py",
+        "timeout": 10,
+        "failClosed": true
       }
     ],
     "preToolUse": [
@@ -18,6 +28,13 @@
     "beforeShellExecution": [
       {
         "command": "agents/dev/hooks/enforce-plan-scope.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "hooks/lib/verify-stage-complete.py",
         "timeout": 10,
         "failClosed": true
       }

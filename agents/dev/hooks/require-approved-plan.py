@@ -16,24 +16,33 @@ def main() -> None:
     ph.require_agent(data, AGENT)
     ticket = ph.ticket_id_from(data)
     if not ticket:
-        ph.allow()
+        ph.deny_missing_ticket("dev", "dev")
         return
 
-    plan = ph.artifact_path(ticket, ph.ARTIFACTS["plan"])
-    if not plan.is_file() or plan.stat().st_size == 0:
-        ph.deny(
-            f"Dev agent blocked: {plan} is missing or empty. Run @plan and wait for approval.",
-            f"Stop. Required input {plan} was not found.",
-        )
-        return
+    if ph.use_lean_artifacts(ticket):
+        missing = ph.missing_prerequisites(ticket, (ph.ARTIFACTS["plan"],))
+        if missing:
+            ph.deny(
+                "Dev agent blocked: plan/spec not ready — " + ", ".join(missing),
+                "Stop. Run @plan or @spec first.",
+            )
+            return
+    else:
+        plan = ph.artifact_path(ticket, ph.ARTIFACTS["plan"])
+        if not plan.is_file() or plan.stat().st_size == 0:
+            ph.deny(
+                f"Dev agent blocked: {plan} is missing or empty. Run @plan first.",
+                f"Stop. Required input {plan} was not found.",
+            )
+            return
 
     if ph.plan_is_approved(ticket, data):
         ph.allow()
         return
 
     ph.deny(
-        f"Dev agent blocked: {plan} exists but is not approved. "
-        f"Need explicit go-ahead or .dev-agent/{ticket}/03-plan.approved.",
+        f"Dev agent blocked: plan for {ticket} is not approved. "
+        f"Need .dev-agent/{ticket}/03-plan.approved or completed plan stage.",
         "Stop. Do not implement an unapproved plan.",
     )
 

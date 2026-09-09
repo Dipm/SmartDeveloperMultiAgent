@@ -1,5 +1,7 @@
 # Output
 
+On failure, update `pipeline.json` with `stages.pr_fix.status: "failed"`, `completed_at`,
+and the structured `error` object. Set `started_at` when the stage begins.
 Append one block to `.dev-agent/{ticket-id}/09-review-log.md`. Create the file
 if it does not exist. If it exists, do not replace prior entries.
 

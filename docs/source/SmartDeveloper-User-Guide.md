@@ -318,6 +318,27 @@ All setup scripts use a unique name so they don’t clash with other tools:
 | Agent ignores steps | Paste the user rule again (Part 1, Step 3) |
 | Tests fail in Dev stage | Fix `project-checks.md` for **this** project |
 | “Python not found” (Windows) | Reinstall Python with “Add to PATH”, or use `py` instead of `python` |
+
+
+## Pipeline error recovery
+
+When a subagent fails or times out, the orchestrator shows a brief error card:
+
+- **What happened** — plain-language summary
+- **Impact** — what is blocked
+- **Suggested fixes** — numbered recovery options
+
+Reply with an option number (or `abort`) before the pipeline continues.
+
+| Symptom | Likely cause | Recovery |
+|---|---|---|
+| Jira MCP auth error | Token expired | Re-authenticate MCP; `retry triage` |
+| Stage timed out (15 min) | Large repo / slow network | `retry {stage}` or narrow scope |
+| Hook blocked | Out-of-scope edit | Read hook message; fix artifact/scope |
+| Review loop limit | 3+ send-backs to @dev | Engineer takes over manually |
+
+See `agents/shared/error-handling.md` for the full contract.
+
 | Permission error on Mac | Don’t use `sudo` — install runs in your home folder |
 
 ---

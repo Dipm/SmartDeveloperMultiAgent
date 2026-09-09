@@ -17,9 +17,9 @@ def main() -> None:
     ph.require_agent(data, AGENT)
     ticket = ph.ticket_id_from(data)
     if not ticket:
-        ph.allow()
+        ph.deny_missing_ticket("plan", "plan")
         return
-    missing = ph.missing_artifacts(ticket, REQUIRED)
+    missing = ph.missing_prerequisites(ticket, REQUIRED)
     if missing:
         ph.deny(
             "Plan agent blocked: missing " + ", ".join(missing) + ". Run @triage and @context first.",

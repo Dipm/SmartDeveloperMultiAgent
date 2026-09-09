@@ -25,3 +25,5 @@ the hook runtime is not installed in this repo.
 
 Do not fix anything. Flag only. If blocking or should-fix issues exist, state
 clearly that this should go back to `@dev`. Return a short summary to the parent.
+Load `agents/shared/error-handling.md` on failure. Follow `agents/shared/token-efficiency.md`.
+

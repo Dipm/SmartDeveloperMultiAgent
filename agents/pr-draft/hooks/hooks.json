@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "agents/pr-draft/hooks/require-prior-artifacts.py",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "hooks/lib/record-stage-start.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "agents/pr-draft/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "agents/pr-draft/hooks/block-open-pr.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "hooks/lib/verify-stage-complete.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

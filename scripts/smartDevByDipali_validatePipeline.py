@@ -18,7 +18,9 @@ EXPECTED_AGENTS = (
     "test",
     "review",
     "docs-pr",
+    "pr-draft",
     "pr-fix",
+    "spec",
 )
 
 ARTIFACT_NAMES = (
@@ -70,6 +72,51 @@ def check_agent_packages() -> int:
                 failures += 1
     return failures
 
+
+
+
+def check_shared_files() -> int:
+    failures = 0
+    for rel in (
+        "agents/shared/error-handling.md",
+        "agents/shared/token-efficiency.md",
+        "agents/shared/requirement-validation.md",
+        "agents/shared/lean-artifacts.md",
+        "agents/shared/platform-and-scope.md",
+    ):
+        if not (REPO_ROOT / rel).is_file():
+            error(f"Missing {rel}")
+            failures += 1
+    return failures
+
+
+def check_agent_errors_and_references() -> int:
+    failures = 0
+    for name in EXPECTED_AGENTS:
+        base = AGENTS / name
+        errors_md = base / "instructions" / "errors.md"
+        if not errors_md.is_file():
+            error(f"Missing {errors_md.relative_to(REPO_ROOT)}")
+            failures += 1
+        output_md = base / "instructions" / "output.md"
+        if output_md.is_file():
+            otext = output_md.read_text(encoding="utf-8", errors="replace")
+            if "pipeline.json" not in otext:
+                error(f"{output_md.relative_to(REPO_ROOT)} must mention pipeline.json updates")
+                failures += 1
+            if "failed" not in otext:
+                error(f"{output_md.relative_to(REPO_ROOT)} must document failure status updates")
+                failures += 1
+        agent_md = base / "agent.md"
+        if agent_md.is_file():
+            atext = agent_md.read_text(encoding="utf-8", errors="replace")
+            if "error-handling.md" not in atext and "instructions/errors.md" not in atext:
+                error(f"{agent_md.relative_to(REPO_ROOT)} must reference error handling")
+                failures += 1
+            if "token-efficiency.md" not in atext:
+                error(f"{agent_md.relative_to(REPO_ROOT)} must reference token-efficiency.md")
+                failures += 1
+    return failures
 
 def check_skills() -> int:
     failures = 0

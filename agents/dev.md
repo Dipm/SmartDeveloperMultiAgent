@@ -26,3 +26,7 @@ the hook runtime is not installed in this repo.
 Do not write the plan (`@plan`). Do not write the test suite (`@test`) unless the
 approved plan lists those test files. Do not open a PR (`@docs-pr`). Return a
 short summary and open questions to the parent agent.
+
+Load `agents/shared/platform-and-scope.md` for multi-platform scope and non-code escalations.
+
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.

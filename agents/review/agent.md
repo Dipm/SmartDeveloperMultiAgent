@@ -24,3 +24,11 @@ back to `@dev` before proceeding — do not soften this. If you found nothing,
 say so explicitly rather than inventing nitpicks.
 
 Return the ranked summary to the parent. Do not call `@dev` or `@docs-pr`.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md`. Read only contract → work → output → one skill at a time.
+

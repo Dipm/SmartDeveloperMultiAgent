@@ -1,5 +1,11 @@
 {
   "pipeline_version": "1",
   "ticket": "EXAMPLE-1",
-  "stages": {}
+  "mode": "non-prod",
+  "stages": {
+    "spec": {
+      "status": "complete",
+      "artifact": "03-plan.md"
+    }
+  }
 }

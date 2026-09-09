@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deny @context start when 01-triage.md is missing."""
+"""Deny @context start when triage stage is incomplete."""
 from __future__ import annotations
 
 import sys
@@ -16,16 +16,16 @@ def main() -> None:
     ph.require_agent(data, AGENT)
     ticket = ph.ticket_id_from(data)
     if not ticket:
-        ph.allow()
+        ph.deny_missing_ticket("context", "context")
         return
-    triage = ph.artifact_path(ticket, ph.ARTIFACTS["triage"])
-    if triage.is_file() and triage.stat().st_size > 0:
-        ph.allow()
+    missing = ph.missing_prerequisites(ticket, (ph.ARTIFACTS["triage"],))
+    if missing:
+        ph.deny(
+            "Context agent blocked: triage not complete — " + ", ".join(missing),
+            "Stop. Run @triage first.",
+        )
         return
-    ph.deny(
-        f"Context agent blocked: {triage} is missing or empty. Run @triage first.",
-        f"Stop. Required input {triage} was not found.",
-    )
+    ph.allow()
 
 
 if __name__ == "__main__":

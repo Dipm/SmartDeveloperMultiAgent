@@ -1,5 +1,7 @@
 # Output
 
+On failure, update `pipeline.json` with `stages.context.status: "failed"`, `completed_at`,
+and the structured `error` object. Set `started_at` when the stage begins.
 Write `.dev-agent/{ticket-id}/02-context.md` with exactly these sections.
 Omit speculation. Empty sections get one factual line (e.g. "Git history not
 available in this environment."). Update `pipeline.json` with

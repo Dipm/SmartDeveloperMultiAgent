@@ -26,3 +26,6 @@ the hook runtime is not installed in this repo.
 
 Handle one comment only. For re-plan or disagreement, confirm with the engineer
 before expanding scope or pushing back. Append to the review log; never overwrite it.
+Load `agents/shared/error-handling.md` on failure. Follow `agents/shared/token-efficiency.md`
+and `agents/shared/platform-and-scope.md`.
+

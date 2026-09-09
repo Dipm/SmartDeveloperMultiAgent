@@ -21,3 +21,12 @@ Follow `instructions/contract.md`, then `instructions/handle.md`, then
 
 Return: classification, what you did or the draft reply, and any confirmation
 still needed. Do not start `@plan` yourself.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md` and `agents/shared/platform-and-scope.md`.
+Read only contract → work → output → one skill at a time.
+

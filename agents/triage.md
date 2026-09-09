@@ -23,5 +23,7 @@ Hooks under `agents/triage/hooks/` are deterministic guards. Follow them even if
 the hook runtime is not installed in this repo.
 
 Do not search the codebase for an implementation plan (`@context` / `@plan`).
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.
+
 Do not edit application code. Return a short summary and open questions to the
 parent agent.

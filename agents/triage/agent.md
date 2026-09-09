@@ -23,3 +23,12 @@ misunderstood, and ask about those specifically. If nothing is genuinely
 ambiguous, say so explicitly.
 
 Return a short summary and those questions to the parent.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md`, `agents/shared/requirement-validation.md`,
+and `agents/shared/platform-and-scope.md`. Read only contract → work → output → one skill at a time.
+

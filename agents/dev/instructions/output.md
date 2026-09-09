@@ -1,26 +1,13 @@
 # Output
 
-Write `.dev-agent/{ticket-id}/04-dev-notes.md` with exactly these sections.
-Update `pipeline.json` with `stages.dev.status: "complete"`.
+**Lean mode (default):** implement code; update `pipeline.json` → `stages.dev`:
+- `status: complete`
+- `summary` — one line what changed
+- `assumptions` — list if ticket validation was unclear
+- `checks` — lint/typecheck pass/fail one line
 
-```markdown
-# Dev notes — {ticket-id}
+Do **not** write `04-dev-notes.md`.
 
-## Implemented
-- what changed, mapped to plan steps
+**Audit trail:** write `04-dev-notes.md` with full sections.
 
-## Files touched
-- `path` — one clause why
-
-## Checks
-- lint / typecheck / build: command, pass/fail, what you fixed if any
-
-## Deviations from the plan
-- (or "No deviations.")
-
-## Assumptions the plan did not cover
-- (or "None.")
-
-## Open questions
-- (or "None.")
-```
+On failure: `stages.dev.status: failed` + error.
