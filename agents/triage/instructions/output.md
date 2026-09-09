@@ -1,25 +1,9 @@
 # Output
 
-Write `.dev-agent/{ticket-id}/01-triage.md` and update `pipeline.json` with
-`stages.triage.status: "complete"`.
+**Lean mode (default):** update `pipeline.json` only (`stages.triage`: status, summary,
+validation_verdict, assumptions). No `01-triage.md`.
 
-```markdown
-# Triage — {ticket-id}
+On failure: `stages.triage.status: failed` + error object.
 
-## Summary
-- 2–3 sentences
-
-## Classification
-- bug | feature | chore
-- severity/priority:
-- complexity: trivial | moderate | complex
-
-## Related tickets / PRs
-- (or "None found.")
-
-## Ambiguities
-- (or "Nothing genuinely ambiguous.")
-
-## Open questions (wasted-work)
-1. ...
-```
+**Audit trail (`--audit-trail`):** write `01-triage.md` with Summary, Pipeline mode,
+Expected behavior validation, Classification, Open questions sections.

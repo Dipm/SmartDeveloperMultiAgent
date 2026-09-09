@@ -13,3 +13,20 @@ required, not optional, regardless of ticket size.
 
 After each subagent finishes, stop and wait for engineer go-ahead before invoking the
 next stage.
+
+## Failure handling
+
+If a subagent fails or times out, the orchestrator presents a brief error card and
+**stops**. Confirm a recovery option (`retry {stage}`, `abort`, etc.) before
+continuing. See `agents/shared/error-handling.md`.
+
+Warn at **5 minutes** if a stage is still running. At **15 minutes**, treat as
+timeout and wait for your confirmation.
+
+## Platform and scope
+
+Agents work in the **current project workspace** only. Multi-platform tickets
+(Android/iOS, etc.) are scoped to the repo you have open — the agent will ask if
+you want other platforms fixed and will need repo/path info. If the issue is not
+in client code (backend, test env, QA repro, proxy logs), agents should tell you
+what to check next rather than forcing a code change.

@@ -18,6 +18,12 @@ Run, in this order, only the commands that exist:
 Do not run the full test suite here unless the approved plan says this stage
 must. `@test` runs tests.
 
+## Transient failures — one retry
+
+If a check command fails due to network, timeout, or tool outage, retry that
+command **once**. On second failure, record in `04-dev-notes.md` and fail the
+stage with `error.code: external_service` if unrecoverable.
+
 If a check fails: fix inside the plan's files when possible. If the failure is
 pre-existing and outside the plan, do not expand scope — record it in
 `04-dev-notes.md` and ask whether to fix it.

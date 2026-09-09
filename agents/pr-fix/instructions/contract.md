@@ -24,3 +24,19 @@
 In: one comment, classified and handled.
 
 Out: batching, silent scope expansion, `@plan` without a flag.
+
+## Platform and non-code scope
+
+Follow `agents/shared/platform-and-scope.md`. Limit fixes to the open workspace;
+ask before touching other platform repos. If the comment implies a backend/QA/env
+issue and client code looks correct, draft a reply suggesting those checks instead
+of changing code.
+## On failure
+
+- Do not write a success artifact unless the stage actually succeeded.
+- Update `pipeline.json` with `status: failed` and structured `error` (see
+  `agents/shared/error-handling.md`).
+- Return error-card fields to the parent. Do not chain the next agent.
+- Transient errors (`external_service`, `auth`, `timeout`): retry **once** inside
+  this agent, then fail with `retry_count: 1`.
+

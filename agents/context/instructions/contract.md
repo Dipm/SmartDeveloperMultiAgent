@@ -23,3 +23,12 @@
 In: files, history, conventions, tests that affect this ticket.
 
 Out: classification (triage), implementation plan (plan), code edits, new tests.
+## On failure
+
+- Do not write a success artifact unless the stage actually succeeded.
+- Update `pipeline.json` with `status: failed` and structured `error` (see
+  `agents/shared/error-handling.md`).
+- Return error-card fields to the parent. Do not chain the next agent.
+- Transient errors (`external_service`, `auth`, `timeout`): retry **once** inside
+  this agent, then fail with `retry_count: 1`.
+

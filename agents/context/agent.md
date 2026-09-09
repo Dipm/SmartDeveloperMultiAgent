@@ -25,3 +25,12 @@ does, say the context is straightforward.
 
 Return to the parent: short summary + open questions. Not the full `02-context.md`
 unless the file could not be written.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md` and `agents/shared/platform-and-scope.md`.
+Read only contract → work → output → one skill at a time.
+

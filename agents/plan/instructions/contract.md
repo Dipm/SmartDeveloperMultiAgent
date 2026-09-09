@@ -22,3 +22,18 @@
 In: files, approach, order, edge cases, blast radius, extra-scope callouts.
 
 Out: implementation, tests, PR.
+
+## Platform and non-code scope
+
+Follow `agents/shared/platform-and-scope.md`. Plans cover the open workspace only
+unless the engineer expanded scope. Prefer a verification plan over code changes when
+no client defect is found.
+## On failure
+
+- Do not write a success artifact unless the stage actually succeeded.
+- Update `pipeline.json` with `status: failed` and structured `error` (see
+  `agents/shared/error-handling.md`).
+- Return error-card fields to the parent. Do not chain the next agent.
+- Transient errors (`external_service`, `auth`, `timeout`): retry **once** inside
+  this agent, then fail with `retry_count: 1`.
+

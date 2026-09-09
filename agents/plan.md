@@ -25,3 +25,5 @@ the hook runtime is not installed in this repo.
 
 Do not implement. Do not call `@dev`. Return the plan summary and the 2–4
 decisions the engineer must weigh in on to the parent agent.
+
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.

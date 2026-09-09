@@ -25,3 +25,5 @@ the hook runtime is not installed in this repo.
 
 Do not classify the ticket (`@triage`). Do not write a plan (`@plan`). Do not edit
 application code. Return a short summary and open questions to the parent agent.
+
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.

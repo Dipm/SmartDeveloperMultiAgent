@@ -4,6 +4,60 @@ alwaysApply: true
 This repo uses a staged ticket-development pipeline (SmartDeveloper). Ticket state
 lives in `.dev-agent/{ticket-id}/` (`pipeline.json` plus numbered artifacts). Agents
 always read prior-stage files before starting their stage, and never skip ahead to a
-later stage's file. Never proceed past a human gate without explicit go-ahead in the
-conversation. The plan gate (stage 3) and the PR gate (stage 7) are required, not
-optional, regardless of ticket size.
+later stage's file.
+
+## Pipeline modes
+
+- **`--non-prod` (default):** `@spec` → `@dev`∥`@test` → `@docs-pr`∥`@pr-draft` → PR gate
+- **`--prod`:** full triage → context → plan → `@dev`∥`@test` → review → ship wave → PR gate
+
+Set `pipeline.json` → `"mode"` on first run. Chain stages automatically; do not stop
+between stages unless a subagent fails, raises blocking open questions, or the PR gate
+is reached. The **only required human gate** is before opening a PR. Plan approval is
+automatic when `@plan` or `@spec` completes.
+
+## Failure handling
+
+When a subagent fails or times out:
+
+1. Update `pipeline.json` with `status: failed` and a structured `error` object.
+2. Present a brief error card to the user (what happened, impact, suggested fixes).
+3. **Stop.** Never auto-retry or continue to the next stage without explicit user
+   confirmation.
+
+Transient errors (Jira/MCP/network): agents may retry **once** internally. After that,
+escalate to the user. See `agents/shared/error-handling.md`.
+
+## Time budgets
+
+Warn at **5 minutes** if a subagent is still running. At **15 minutes**, record
+`error.code: timeout` and stop for user confirmation.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md`. Read only what the current stage needs.
+
+## Mode default
+
+Default pipeline mode is **`non-prod`**. Use `--prod` only when the user or ticket
+explicitly requires it. When unclear, use `non-prod` and record the assumption.
+
+## Requirement validation
+
+Follow `agents/shared/requirement-validation.md`. Compare ticket expected behavior to
+the current codebase before implementing. Do not spend excessive time annotating
+requirements — document quick findings, provide a user verification guide when unclear,
+proceed on reasonable assumptions, and ask the user to review assumptions at the PR gate.
+
+## Platform and scope
+
+Follow `agents/shared/platform-and-scope.md`. Fix only the **open workspace** when a
+ticket spans Android/iOS or multiple repos — ask before touching other platforms and
+collect repo info. If no client-code defect is found, escalate (backend logs, proxy,
+QA repro, env config) instead of shipping speculative fixes.
+
+## Lean artifacts (default)
+
+Do **not** write `01-triage.md` … `07-docs.md` unless `--audit-trail`. Record each
+stage as a short entry in `pipeline.json` only (`status`, `summary`, `paths` where
+needed). See `agents/shared/lean-artifacts.md`.

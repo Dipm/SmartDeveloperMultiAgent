@@ -1,7 +1,13 @@
+Read `## Expected behavior validation` from `01-triage.md` and map code to that verdict.
+
 # Research
 
 Work from the triage brief. Prefer a small, high-signal set of files over a
 dump of weak matches.
+
+Follow `agents/shared/platform-and-scope.md`: research only the **open workspace**.
+If the ticket names other platforms, record them as out-of-scope and flag for the
+engineer. If code looks correct, note possible backend/QA/proxy causes.
 
 1. **Code** — load `skills/search-codebase/SKILL.md`. Start from names, errors,
    and modules in triage. Follow imports and call sites one hop. Stop when

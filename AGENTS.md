@@ -7,7 +7,8 @@ application runtime — only agent packages, hooks, commands, and scripts.
 
 | Path | Purpose |
 |---|---|
-| `agents/` | Subagent packages (`triage`, `context`, `plan`, `dev`, `test`, `review`, `docs-pr`, `pr-fix`) |
+| `agents/` | Subagent packages (`triage`, `context`, `plan`, `dev`, `test`, `review`, `spec`, `docs-pr`, `pr-draft`, `pr-fix`) |
+| `agents/shared/` | Error handling, token-efficiency, requirement-validation, lean-artifacts, platform-and-scope |
 | `agents/orchestrator.md` | Pipeline coordination contract |
 | `commands/fix-ticket.md` | Slash command entry point |
 | `rules/dev-agent-pipeline.mdc` | Always-on pipeline rule |

@@ -6,10 +6,13 @@ import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 PIPELINE_VERSION = "1"
+PIPELINE_MODES = frozenset({"prod", "non-prod"})
+DEFAULT_PIPELINE_MODE = "non-prod"
 
 TICKET_RE = re.compile(
     r"\b([A-Z][A-Z0-9]+-\d+)\b|(?:ticket[_-]?id[:\s]+)([A-Za-z0-9._-]+)",
@@ -71,6 +74,23 @@ ARTIFACTS = {
     "manifest": "pipeline.json",
     "plan_approved": "03-plan.approved",
 }
+STAGE_ARTIFACT = {
+    "triage": ARTIFACTS["triage"],
+    "context": ARTIFACTS["context"],
+    "plan": ARTIFACTS["plan"],
+    "dev": ARTIFACTS["dev_notes"],
+    "test": ARTIFACTS["tests"],
+    "review": ARTIFACTS["review"],
+    "docs_pr": ARTIFACTS["docs"],
+    "pr_draft": ARTIFACTS["pr"],
+    "pr_fix": ARTIFACTS["review_log"],
+    "spec": ARTIFACTS["plan"],
+}
+
+TRANSIENT_ERROR_CODES = frozenset({"external_service", "auth", "timeout"})
+
+ARTIFACT_SIZE_WARN_BYTES = 50 * 1024
+
 
 SUBAGENT_KEYS = (
     "subagent",
@@ -241,6 +261,9 @@ def paths_from_plan_text(text: str) -> set[str]:
 
 
 def plan_paths(ticket: str) -> set[str]:
+    from_manifest = manifest_plan_paths(ticket)
+    if from_manifest:
+        return from_manifest
     plan = artifact_path(ticket, ARTIFACTS["plan"])
     if not plan.is_file():
         return set()
@@ -289,29 +312,155 @@ def review_verdict(ticket: str) -> str | None:
     return None
 
 
-def review_sends_back(ticket: str) -> bool:
+def _review_section_has_items(text: str, heading: str) -> bool:
+    section = re.search(
+        rf"## {heading}\s*\n([\s\S]*?)(?=\n## |\Z)", text, re.I
+    )
+    if not section:
+        return False
+    body = section.group(1).strip().lower()
+    return bool(body and body not in ("none.", "none", "- none."))
+
+
+def review_sends_back(ticket: str, *, blocking_only: bool | None = None) -> bool:
+    if blocking_only is None:
+        blocking_only = True
+    if use_lean_artifacts(ticket):
+        manifest = load_manifest(ticket)
+        review = manifest.get("stages", {}).get("review", {})
+        if isinstance(review, dict):
+            verdict = review.get("verdict")
+            if isinstance(verdict, str) and verdict.lower() == "clean":
+                return False
+            blocking = review.get("blocking")
+            if isinstance(blocking, list) and any(str(x).strip() for x in blocking):
+                return True
+            if not blocking_only:
+                should_fix = review.get("should_fix")
+                if isinstance(should_fix, list) and any(str(x).strip() for x in should_fix):
+                    return True
+        return False
     verdict = review_verdict(ticket)
     if verdict == "clean":
         return False
-    if verdict == "send_back":
+    if verdict == "send_back" and blocking_only:
         return True
     review = artifact_path(ticket, ARTIFACTS["review"])
     if not review.is_file():
-        return True
+        return blocking_only
     text = review.read_text(encoding="utf-8", errors="replace")
-    blocking = re.search(
-        r"## Blocking\s*\n([\s\S]*?)(?=\n## |\Z)", text, re.I
-    )
-    should_fix = re.search(
-        r"## Should-fix\s*\n([\s\S]*?)(?=\n## |\Z)", text, re.I
-    )
-    for section in (blocking, should_fix):
-        if not section:
-            continue
-        body = section.group(1).strip().lower()
-        if body and body not in ("none.", "none", "- none."):
-            return True
+    if _review_section_has_items(text, "Blocking"):
+        return True
+    if not blocking_only and _review_section_has_items(text, "Should-fix"):
+        return True
     return False
+
+
+
+def use_lean_artifacts(ticket: str) -> bool:
+    """When True (default), stages record state in pipeline.json only — no numbered .md files."""
+    manifest = load_manifest(ticket)
+    if "lean_artifacts" in manifest:
+        return bool(manifest["lean_artifacts"])
+    return True
+
+
+def set_lean_artifacts(ticket: str, lean: bool) -> None:
+    manifest = load_manifest(ticket)
+    manifest["lean_artifacts"] = lean
+    save_manifest(ticket, manifest)
+
+
+def stage_is_complete(ticket: str, stage: str) -> bool:
+    status = stage_status(ticket, stage)
+    return status in ("complete", "approved")
+
+
+STAGE_FOR_ARTIFACT = {
+    ARTIFACTS["triage"]: "triage",
+    ARTIFACTS["context"]: "context",
+    ARTIFACTS["plan"]: "plan",
+    ARTIFACTS["dev_notes"]: "dev",
+    ARTIFACTS["tests"]: "test",
+    ARTIFACTS["review"]: "review",
+    ARTIFACTS["docs"]: "docs_pr",
+    ARTIFACTS["pr"]: "pr_draft",
+}
+
+
+def missing_prerequisites(ticket: str, artifact_names: tuple[str, ...]) -> list[str]:
+    """Return missing artifact paths or stage names depending on lean mode."""
+    if not use_lean_artifacts(ticket):
+        return missing_artifacts(ticket, artifact_names)
+    missing: list[str] = []
+    for name in artifact_names:
+        stage = STAGE_FOR_ARTIFACT.get(name)
+        if not stage:
+            path = artifact_path(ticket, name)
+            if not path.is_file() or path.stat().st_size == 0:
+                missing.append(str(path))
+            continue
+        if name == ARTIFACTS["plan"]:
+            if stage_is_complete(ticket, "spec") or stage_is_complete(ticket, "plan"):
+                if not plan_paths(ticket):
+                    missing.append("pipeline.json: stages.plan.paths or stages.spec.paths")
+                continue
+        if not stage_is_complete(ticket, stage):
+            missing.append(f"pipeline.json: stages.{stage}.status != complete")
+    return missing
+
+
+def manifest_plan_paths(ticket: str) -> set[str]:
+    manifest = load_manifest(ticket)
+    found: set[str] = set()
+    for key in ("spec", "plan"):
+        stage = manifest.get("stages", {}).get(key, {})
+        if not isinstance(stage, dict):
+            continue
+        paths = stage.get("paths")
+        if isinstance(paths, list):
+            for item in paths:
+                if isinstance(item, str) and item.strip():
+                    found.add(item.strip().strip("/"))
+    return found
+
+
+def pipeline_mode(ticket: str) -> str:
+    manifest = load_manifest(ticket)
+    mode = manifest.get("mode")
+    if isinstance(mode, str) and mode in PIPELINE_MODES:
+        return mode
+    return DEFAULT_PIPELINE_MODE
+
+
+def is_non_prod(ticket: str) -> bool:
+    return pipeline_mode(ticket) == "non-prod"
+
+
+def is_prod(ticket: str) -> bool:
+    return pipeline_mode(ticket) == "prod"
+
+
+def set_pipeline_mode(ticket: str, mode: str) -> None:
+    if mode not in PIPELINE_MODES:
+        raise ValueError(f"invalid pipeline mode: {mode}")
+    manifest = load_manifest(ticket)
+    manifest["mode"] = mode
+    save_manifest(ticket, manifest)
+
+
+def auto_approve_plan(ticket: str) -> None:
+    sidecar = artifact_path(ticket, ARTIFACTS["plan_approved"])
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    if not sidecar.is_file():
+        sidecar.write_text("auto-approved\n", encoding="utf-8")
+    manifest = load_manifest(ticket)
+    plan = manifest.setdefault("stages", {}).setdefault("plan", {})
+    plan["status"] = "approved"
+    plan["artifact"] = ARTIFACTS["plan"]
+    plan.setdefault("approved_at", utc_now_iso())
+    save_manifest(ticket, manifest)
+
 
 
 def plan_is_approved(ticket: str, data: dict[str, Any]) -> bool:
@@ -322,7 +471,15 @@ def plan_is_approved(ticket: str, data: dict[str, Any]) -> bool:
         return True
     manifest = load_manifest(ticket)
     plan = manifest.get("stages", {}).get("plan", {})
-    return plan.get("status") == "approved"
+    status = plan.get("status")
+    if status == "approved":
+        return True
+    if status == "complete":
+        if artifact_path(ticket, ARTIFACTS["plan"]).is_file():
+            return True
+        if use_lean_artifacts(ticket) and plan_paths(ticket):
+            return True
+    return False
 
 
 def load_manifest(ticket: str) -> dict[str, Any]:
@@ -334,7 +491,12 @@ def load_manifest(ticket: str) -> dict[str, Any]:
         if isinstance(data, dict):
             return data
     except json.JSONDecodeError:
-        pass
+        return {
+            "pipeline_version": PIPELINE_VERSION,
+            "ticket": ticket,
+            "stages": {},
+            "_manifest_error": "corrupt_json",
+        }
     return {"pipeline_version": PIPELINE_VERSION, "ticket": ticket, "stages": {}}
 
 
@@ -379,3 +541,111 @@ def artifact_allowed_pattern(artifact: str) -> re.Pattern[str]:
 
 def is_dev_agent_notes(path: str) -> bool:
     return bool(artifact_allowed_pattern(ARTIFACTS["dev_notes"]).search(normalize_path(path)))
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def stage_status(ticket: str, stage: str) -> str | None:
+    manifest = load_manifest(ticket)
+    stage_entry = manifest.get("stages", {}).get(stage, {})
+    if isinstance(stage_entry, dict):
+        status = stage_entry.get("status")
+        if isinstance(status, str):
+            return status
+    return None
+
+
+def is_transient_error(code: str) -> bool:
+    return code in TRANSIENT_ERROR_CODES
+
+
+def validate_stage_artifact(ticket: str, stage: str) -> list[str]:
+    if use_lean_artifacts(ticket):
+        if not stage_is_complete(ticket, stage):
+            return [f"pipeline.json: stages.{stage}.status not complete"]
+        if stage in ("plan", "spec") and not plan_paths(ticket):
+            return ["pipeline.json: missing stages.plan.paths or stages.spec.paths"]
+        return []
+    issues: list[str] = []
+    artifact_name = STAGE_ARTIFACT.get(stage)
+    if not artifact_name:
+        return issues
+    path = artifact_path(ticket, artifact_name)
+    if not path.is_file():
+        issues.append(f"missing: {path}")
+    elif path.stat().st_size == 0:
+        issues.append(f"empty: {path}")
+    elif path.stat().st_size > ARTIFACT_SIZE_WARN_BYTES:
+        issues.append(f"oversized: {path} ({path.stat().st_size} bytes)")
+    return issues
+
+
+def mark_stage_running(ticket: str, stage: str, *, artifact: str | None = None) -> None:
+    if artifact is None and use_lean_artifacts(ticket):
+        artifact_name = ARTIFACTS["manifest"]
+    else:
+        artifact_name = artifact or STAGE_ARTIFACT.get(stage)
+    update_stage(
+        ticket,
+        stage,
+        status="running",
+        artifact=artifact_name,
+        started_at=utc_now_iso(),
+    )
+
+
+def mark_stage_complete(
+    ticket: str,
+    stage: str,
+    artifact: str | None = None,
+    **extra: Any,
+) -> None:
+    if artifact is None and use_lean_artifacts(ticket):
+        artifact_name = ARTIFACTS["manifest"]
+    else:
+        artifact_name = artifact or STAGE_ARTIFACT.get(stage)
+    update_stage(
+        ticket,
+        stage,
+        status="complete",
+        artifact=artifact_name,
+        completed_at=utc_now_iso(),
+        **extra,
+    )
+
+
+def mark_stage_failed(
+    ticket: str,
+    stage: str,
+    *,
+    code: str,
+    message: str,
+    recoverable: bool = True,
+    suggestions: list[str] | None = None,
+    retry_count: int = 0,
+    artifact: str | None = None,
+) -> None:
+    artifact_name = artifact or STAGE_ARTIFACT.get(stage)
+    error: dict[str, Any] = {
+        "code": code,
+        "message": message,
+        "recoverable": recoverable,
+        "retry_count": retry_count,
+        "suggestions": suggestions or [],
+    }
+    update_stage(
+        ticket,
+        stage,
+        status="failed",
+        artifact=artifact_name,
+        completed_at=utc_now_iso(),
+        error=error,
+    )
+
+
+def deny_missing_ticket(agent: str, stage: str) -> None:
+    deny(
+        f"{agent} blocked: no ticket id. Invoke as @{stage} {{ticket-id}}.",
+        f"Stop. Ticket id required for @{stage}.",
+    )

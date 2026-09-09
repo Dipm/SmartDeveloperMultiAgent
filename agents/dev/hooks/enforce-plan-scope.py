@@ -32,7 +32,7 @@ def main() -> None:
 
     if name in ph.WRITE_TOOLS or path:
         norm = ph.normalize_path(path) if path else ""
-        if path and ph.is_dev_agent_notes(norm):
+        if path and (ph.is_dev_agent_notes(norm) or norm.endswith("/pipeline.json")):
             ph.allow()
             return
         if ticket:

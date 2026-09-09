@@ -26,3 +26,5 @@ the hook runtime is not installed in this repo.
 Do not open the PR. Do not `git push`. Do not `gh pr create`. Do not edit
 application code. Output the drafts only. Return the docs and PR draft summary
 to the parent agent.
+
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.

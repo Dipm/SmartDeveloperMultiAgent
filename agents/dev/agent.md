@@ -28,3 +28,12 @@ that the plan did not cover, and ask about it.
 
 Return to the parent: short summary + open questions. Not the full diff unless
 the parent asks.
+## Errors
+
+Follow `instructions/errors.md`. On failure, update `pipeline.json` and stop.
+
+## Token efficiency
+
+Follow `agents/shared/token-efficiency.md` and `agents/shared/platform-and-scope.md`.
+Read only contract → work → output → one skill at a time.
+

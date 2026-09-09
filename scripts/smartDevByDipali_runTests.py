@@ -29,7 +29,22 @@ def run_hook(script: str, payload: dict, *, agent: str | None = None) -> dict:
     return json.loads(proc.stdout.decode())
 
 
+def use_audit_trail(ticket: str) -> None:
+    root = REPO_ROOT / ".dev-agent" / ticket
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "pipeline.json").write_text(
+        json.dumps({
+            "pipeline_version": "1",
+            "ticket": ticket,
+            "lean_artifacts": False,
+            "stages": {},
+        }) + "\n",
+        encoding="utf-8",
+    )
+
+
 def write_plan(ticket: str, paths: list[str]) -> None:
+    use_audit_trail(ticket)
     root = REPO_ROOT / ".dev-agent" / ticket
     root.mkdir(parents=True, exist_ok=True)
     body = "# Plan\n\n```paths\n" + "\n".join(paths) + "\n```\n"

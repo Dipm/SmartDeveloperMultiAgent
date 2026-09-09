@@ -2,6 +2,10 @@
 
 1. Confirm gates in `contract.md`. If any fail, write nothing and report to parent.
 
+   Load `agents/shared/platform-and-scope.md`. If the ticket spans platforms, confirm
+   you are fixing the open project only. If no client-code issue is found after targeted
+   search, stop and escalate per that doc — do not implement a guess.
+
 2. Load `skills/implement-from-plan/SKILL.md`. Implement strictly according to
    the plan: files, approach, order of changes. Do not "improve" adjacent code.
 

@@ -1,22 +1,11 @@
 # Output
 
-Write `.dev-agent/{ticket-id}/05-tests.md`.
+**Lean mode (default):** update `pipeline.json` → `stages.test`:
+- `status: complete`
+- `summary` — tests run + result in one line
 
-```markdown
-# Tests — {ticket-id}
+Do **not** write `05-tests.md`.
 
-## Added or updated
-- `path` — what it covers
+**Audit trail:** write `05-tests.md`.
 
-## Commands run
-- command — pass/fail
-
-## Coverage vs plan edge cases
-- case — covered / not covered / why not
-
-## Pre-existing test debt
-- (or "None noticed in this area.")
-
-## Open questions
-- in-scope to address gaps/debt? (or "None.")
-```
+On failure: `stages.test.status: failed` + error.

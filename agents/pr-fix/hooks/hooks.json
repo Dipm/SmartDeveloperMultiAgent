@@ -6,6 +6,11 @@
         "command": "agents/pr-fix/hooks/require-single-comment.py",
         "timeout": 10,
         "failClosed": true
+      },
+      {
+        "command": "hooks/lib/record-stage-start.py",
+        "timeout": 10,
+        "failClosed": true
       }
     ],
     "preToolUse": [
@@ -18,6 +23,13 @@
     "beforeShellExecution": [
       {
         "command": "agents/pr-fix/hooks/append-only-log.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "hooks/lib/verify-stage-complete.py",
         "timeout": 10,
         "failClosed": true
       }

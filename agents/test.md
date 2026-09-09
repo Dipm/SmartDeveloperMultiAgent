@@ -25,3 +25,5 @@ the hook runtime is not installed in this repo.
 
 Write and run tests. Do not re-implement the feature (`@dev`). Do not start
 `@review`. Return a short summary and open questions to the parent agent.
+
+On failure, follow `agents/shared/error-handling.md` and `instructions/errors.md`.

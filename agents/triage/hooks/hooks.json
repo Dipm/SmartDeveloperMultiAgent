@@ -6,6 +6,11 @@
         "command": "agents/triage/hooks/require-ticket.py",
         "timeout": 10,
         "failClosed": true
+      },
+      {
+        "command": "hooks/lib/record-stage-start.py",
+        "timeout": 10,
+        "failClosed": true
       }
     ],
     "preToolUse": [
@@ -25,6 +30,13 @@
     "beforeShellExecution": [
       {
         "command": "agents/triage/hooks/jira-and-artifact-readonly.py",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "hooks/lib/verify-stage-complete.py",
         "timeout": 10,
         "failClosed": true
       }
